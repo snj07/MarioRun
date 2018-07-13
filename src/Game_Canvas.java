@@ -1,19 +1,13 @@
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.awt.image.BufferedImage;
 import java.awt.Font;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 
-public class Game_Canvas extends GameDriver
-{
+public class Game_Canvas extends GameDriver {
 	private static final long serialVersionUID = 1L;
 	private double bgXPos, wfXPos, score, highScore;
 	private int waterfallCount;
@@ -34,16 +28,13 @@ public class Game_Canvas extends GameDriver
 	private boolean isEnter;
 	private boolean isEnterTwo;
 	private int endCounter;
-	public static boolean ENDED=false;
-	
+	public static boolean ENDED = false;
 
 	// private ArrayList<Fireball> fire;
 
-	public Game_Canvas()
-	{
-		String[] stuff = {"audio/Jump.wav", "audio/Shooting.wav",
-				"audio/BulletDying.wav", "audio/Dead.wav", "audio/Opening.wav",
-				"audio/BuildUp.wav", "audio/BackgroundSong.wav"};
+	public Game_Canvas() {
+		String[] stuff = { "audio/Jump.wav", "audio/Shooting.wav", "audio/BulletDying.wav", "audio/Dead.wav",
+				"audio/Opening.wav", "audio/BuildUp.wav", "audio/BackgroundSong.wav" };
 		sd = new SoundDriver(stuff);
 		fd = new FileDriver();
 		background = addImage("background.png");
@@ -51,13 +42,11 @@ public class Game_Canvas extends GameDriver
 		title = addImage("Title.png");
 		timer = 0;
 		new Rectangle(0, 0, 800, 600);
-		joon = new Mario(120, 416, 60, 75, 0, 0, Color.RED,
-				addImage("MarioSprites.png"));
+		joon = new Mario(120, 416, 60, 75, 0, 0, Color.RED, addImage("MarioSprites.png"));
 		loading = 1.1;
 		accelRate = -0.001;
 		spawnSpace = 250;
-		fg = new Foreground(-6, addImage("LeftEdgeTile.png"),
-				addImage("Tile.png"), addImage("RightEdgeTile.png"));
+		fg = new Foreground(-6, addImage("LeftEdgeTile.png"), addImage("Tile.png"), addImage("RightEdgeTile.png"));
 		fg.init();
 		musicTimer = 0;
 		startGame = false;
@@ -68,26 +57,20 @@ public class Game_Canvas extends GameDriver
 		highScore = Integer.parseInt(fd.getStringArray("highScores.txt")[0]);
 		Font ttfBase = null;
 		sd.loop(4);
-		try
-		{
-			InputStream myStream = new BufferedInputStream(new FileInputStream(
-					"BorisBlackBloxx.ttf"));
+		try {
+			InputStream myStream = new BufferedInputStream(new FileInputStream("BorisBlackBloxx.ttf"));
 			ttfBase = Font.createFont(Font.TRUETYPE_FONT, myStream);
 			defaultFont = ttfBase.deriveFont(Font.BOLD, 36);
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.err.println("CODE2000 not loaded.");
 		}
 	}
 
-	public void draw(Graphics2D win)
-	{
+	public void draw(Graphics2D win) {
 		win.setColor(Color.WHITE);
 		win.setFont(defaultFont);
-		if (!startGame)
-		{
+		if (!startGame) {
 
 			drawAndMoveBG(win);
 			win.drawImage(title, 800 / 2 - title.getWidth() / 2 - 12, 100, null);
@@ -104,55 +87,42 @@ public class Game_Canvas extends GameDriver
 			win.setColor(new Color(245, 49, 28));
 			f1 = defaultFont.deriveFont(Font.BOLD, 36);
 			win.setFont(f1);
-			
-			if (loading >= 100)
-			{
-				if (pressEnterCount % 60 <= 29)
-				{
+
+			if (loading >= 100) {
+				if (pressEnterCount % 60 <= 29) {
 					win.drawString("Press ENTER to Play", 170, 340);
 				}
 				pressEnterCount++;
-				if (pressEnterCount >= 120)
-				{
+				if (pressEnterCount >= 120) {
 					pressEnterCount = 0;
 				}
-				if (keys[10])
-				{
+				if (keys[10]) {
 					startGame = true;
 					isEnter = true;
 					pressEnterCount = 0;
 					sd.stop(4);
 					sd.play(5);
 				}
-				if (isEnter = true)
-				{
+				if (isEnter = true) {
 					isEnter = false;
 					isEnterTwo = true;
 				}
-				if (isEnterTwo = true)
-				{
-					if (musicTimer >= 723)
-					{
+				if (isEnterTwo = true) {
+					if (musicTimer >= 723) {
 						startGame = true;
 						sd.stop(4);
 						sd.stop(5);
 						sd.loop(6);
-					}
-					else
-					{
+					} else {
 						musicTimer++;
 					}
 				}
-			}
-			else
-			{
+			} else {
 				win.drawString("Loading: " + (int) loading, 275, 340);
 				// loading = loading * 1.01;
 				loading += 100;
 			}
-		}
-		else if (!endGame)
-		{
+		} else if (!endGame) {
 			drawAndMoveBG(win);
 			drawAndMoveWaterfall(win, endGame);
 			win.drawString("Score: " + (int) score, 8, 36);
@@ -168,40 +138,33 @@ public class Game_Canvas extends GameDriver
 			joon.drawActor(win);
 			death();
 			timer++;
-		}
-		else
-		{
+		} else {
 			win.drawImage(background, (int) bgXPos, 0, null);
-			win.drawImage(background, (int) bgXPos + background.getWidth(), 0,
-					null);
+			win.drawImage(background, (int) bgXPos + background.getWidth(), 0, null);
 			drawAndMoveWaterfall(win, endGame);
 			win.drawString("Score: " + (int) score, 8, 36);
 			win.drawString("High Score: " + (int) highScore, 8, 80);
 			fg.draw(win);
 			win.setColor(new Color(245, 49, 28));
-			if (pressEnterCount % 60 <= 29 && endCounter > 100)
-			{
+			if (pressEnterCount % 60 <= 29 && endCounter > 100) {
 				win.drawString("Game Over", 280, 260);
 				win.drawString("Press ENTER to Continue", 120, 300);
 			}
 			pressEnterCount++;
-			if (pressEnterCount >= 120)
-			{
+			if (pressEnterCount >= 120) {
 				pressEnterCount = 0;
 			}
 			// win.drawImage(endImg, 30, 200, null);
-			if (highScore < score)
-			{
+			if (highScore < score) {
 				highScore = score;
 				String[] scores = fd.getStringArray("highScores.txt");
 				scores[0] = "" + (int) score;
 				fd.addToFile("highScores.txt", scores);
 			}
-			
-			if ((keys[10] && endCounter > 100)|| ENDED)
-			{
-				
-				ENDED=false;
+
+			if ((keys[10] && endCounter > 100) || ENDED) {
+
+				ENDED = false;
 				reset();
 				pressEnterCount = 0;
 				sd.stop(3);
@@ -211,24 +174,20 @@ public class Game_Canvas extends GameDriver
 		}
 	}
 
-	public void drawAndMoveBG(Graphics2D win)
-	{
+	public void drawAndMoveBG(Graphics2D win) {
 		bgXPos -= 0.5;
-		if (bgXPos <= -background.getWidth())
-		{
+		if (bgXPos <= -background.getWidth()) {
 			bgXPos = 0;
 		}
 		win.drawImage(background, (int) bgXPos, 0, null);
 		win.drawImage(background, (int) bgXPos + background.getWidth(), 0, null);
 	}
 
-	public void drawAndMoveWaterfall(Graphics2D win, boolean end)
-	{
+	public void drawAndMoveWaterfall(Graphics2D win, boolean end) {
 		wfXPos += fg.getSpeed();
 		if (end)
 			wfXPos -= fg.getSpeed();
-		if (wfXPos <= -waterfall.getWidth())
-		{
+		if (wfXPos <= -waterfall.getWidth()) {
 			wfXPos = 0;
 		}
 		int pos = waterfallCount / 15;
@@ -236,16 +195,13 @@ public class Game_Canvas extends GameDriver
 		win.drawImage(img, (int) wfXPos, 520, null);
 		win.drawImage(img, (int) wfXPos + waterfall.getWidth(), 520, null);
 		waterfallCount++;
-		if (waterfallCount == 45)
-		{
+		if (waterfallCount == 45) {
 			waterfallCount = 0;
 		}
 	}
 
-	public void death()
-	{
-		if (joon.getYPos() > 500)
-		{
+	public void death() {
+		if (joon.getYPos() > 500) {
 			sd.stop(4);
 			sd.stop(5);
 			sd.stop(6);
@@ -255,13 +211,11 @@ public class Game_Canvas extends GameDriver
 
 	}
 
-	public void setScore()
-	{
+	public void setScore() {
 		score += 0.1;
 	}
 
-	public void reset()
-	{
+	public void reset() {
 		endGame = false;
 		endCounter = 0;
 		joon.getHitBox().setLocation(120, 416);
